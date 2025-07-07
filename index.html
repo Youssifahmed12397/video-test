@@ -3,7 +3,6 @@
 <head>
   <meta charset="UTF-8" />
   <title>Test R2 CDN Video</title>
-  <link href="https://unpkg.com/video.js/dist/video-js.css" rel="stylesheet" />
   <style>
     body {
       background: #111;
@@ -11,22 +10,38 @@
       text-align: center;
       padding-top: 50px;
     }
+    video {
+      width: 90%;
+      max-width: 720px;
+      height: auto;
+    }
   </style>
 </head>
 <body>
   <h1>تيست سيرفرات</h1>
 
-  <video
-    id="my-video"
-    class="video-js vjs-default-skin"
-    controls
-    preload="auto"
-    width="720"
-    height="400"
-    data-setup='{}'>
-    <source src="https://video.youssifplatformtesting.tech/master.m3u8" type="application/x-mpegURL" />
-  </video>
+  <video id="video" controls muted playsinline></video>
 
-  <script src="https://unpkg.com/video.js/dist/video.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
+  <script>
+    const video = document.getElementById('video');
+    const videoSrc = "https://video.youssifplatformtesting.tech/master.m3u8";
+
+    if (Hls.isSupported()) {
+      const hls = new Hls();
+      hls.loadSource(videoSrc);
+      hls.attachMedia(video);
+      hls.on(Hls.Events.MANIFEST_PARSED, function () {
+        video.play();
+      });
+    } else if (video.canPlayType('application/vnd.apple.mpegurl')) {
+      video.src = videoSrc;
+      video.addEventListener('loadedmetadata', function () {
+        video.play();
+      });
+    } else {
+      alert("This browser doesn't support HLS playback.");
+    }
+  </script>
 </body>
 </html>
